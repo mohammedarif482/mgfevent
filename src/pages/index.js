@@ -15,7 +15,7 @@ export default function Home() {
         <title>Meragi - Weddings Made Easy</title>
         <meta name="description" content="Plan your perfect wedding day with professional services. Get a free competitive quote today." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.png" />
       </Head>
 
       <WeddingHero />
