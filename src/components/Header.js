@@ -26,7 +26,7 @@ export default function Header() {
           {/* Centered Logo */}
           <Link href="/" className="flex items-center absolute left-1/2 transform -translate-x-1/2">
             <div className="relative h-3 w-20">
-              <Image src={BrandIcon} alt="Meragi logo" />
+              <Image src={BrandIcon} alt="MGF logo" />
             </div>
           </Link>
           

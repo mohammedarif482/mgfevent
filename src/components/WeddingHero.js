@@ -22,7 +22,7 @@ export default function WeddingHero() {
             {/* Left Column - Wedding Text */}
             <div className="text-white mb-10 md:mb-0 md:w-1/2 text-center md:text-left">
               <h1 className="font-serif italic text-5xl md:text-7xl lg:text-8xl leading-tight mb-4">
-                Weddings <br />
+                Events <br />
                 Made Easy
               </h1>
               <p className="text-xl md:text-2xl max-w-xl mx-auto md:mx-0 mt-4">

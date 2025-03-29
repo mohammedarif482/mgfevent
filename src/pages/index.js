@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Meragi - Weddings Made Easy</title>
+        <title>MGF Event - Events Made Easy</title>
         <meta name="description" content="Plan your perfect wedding day with professional services. Get a free competitive quote today." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.png" />
