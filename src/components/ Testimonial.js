@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 
 // Sample media URLs (replace with your actual image and video paths)
 const media = [
@@ -34,15 +34,95 @@ const testimonials = [
 ];
 
 const Testimonial = () => {
+  const [fullscreenMedia, setFullscreenMedia] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(true);
+
+  const FullscreenModal = () => {
+    const mediaRef = useRef(null);
+
+    useEffect(() => {
+      if (fullscreenMedia && mediaRef.current) {
+        const media = mediaRef.current;
+        if (isPlaying) {
+          media.play();
+        } else {
+          media.pause();
+        }
+      }
+    }, [isPlaying, fullscreenMedia]);
+
+    if (!fullscreenMedia) return null;
+
+    return (
+      <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center">
+        <div className="relative w-full max-w-6xl h-[80vh]">
+          {/* Close Button */}
+          <button 
+            onClick={() => setFullscreenMedia(null)}
+            className="absolute top-4 right-4 z-60 text-white hover:bg-white/20 rounded-2xl p-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+
+          {/* Media Container */}
+          <div className="w-full h-full flex items-center justify-center">
+            {fullscreenMedia.type === 'video' ? (
+              <video
+                ref={mediaRef}
+                src={fullscreenMedia.src}
+                className="max-w-full max-h-full object-contain"
+                loop
+                controls={false}
+              />
+            ) : (
+              <img 
+                src={fullscreenMedia.src} 
+                alt="Fullscreen" 
+                className="max-w-full max-h-full object-contain"
+              />
+            )}
+          </div>
+
+          {/* Controls */}
+          {fullscreenMedia.type === 'video' && (
+            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-white/20 rounded-2xl flex items-center space-x-4 p-2">
+              <button 
+                onClick={() => setIsPlaying(!isPlaying)}
+                className="text-white hover:bg-white/20 rounded-2xl p-2"
+              >
+                {isPlaying ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="6" y="4" width="4" height="16"></rect>
+                    <rect x="14" y="4" width="4" height="16"></rect>
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                )}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <section className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">
-          {/* Tagline */}
-       <p className="text-center text-gray-600 mb-1 text-lg">
-      Testimonials</p>
+        {/* Tagline */}
+        <p className="text-center text-gray-600 mb-1 text-lg">
+          Testimonials
+        </p>
         {/* Section Title */}
-        <h2 className="text-center text-4xl md:text-5xl font-medium text-gray-900 mb-16">Let’s listen from our clients,</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <h2 className="text-center text-4xl md:text-5xl font-medium text-gray-900 mb-16">
+          Let’s listen from our clients,
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Media Masonry Grid */}
           <div className="grid grid-cols-2 gap-4">
             {media.map((item, index) => (
@@ -51,8 +131,9 @@ const Testimonial = () => {
                 className={`
                   bg-white shadow-lg rounded-2xl overflow-hidden
                   ${index % 3 === 0 ? 'row-span-2' : 'row-span-1'}
-                  hover:scale-105 transition-transform duration-300
+                  hover:scale-105 transition-transform duration-300 cursor-pointer
                 `}
+                onClick={() => setFullscreenMedia(item)}
               >
                 {item.type === 'image' ? (
                   <img 
@@ -92,6 +173,7 @@ const Testimonial = () => {
           </div>
         </div>
       </div>
+      <FullscreenModal />
     </section>
   );
 };
