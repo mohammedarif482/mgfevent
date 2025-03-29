@@ -2,6 +2,8 @@ import Link from "next/link";
 import Image from "next/image"; 
 import { useState } from "react"; 
 import BrandIcon from "../../public/logo.png"; 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPhone } from '@fortawesome/free-solid-svg-icons';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -64,11 +66,11 @@ export default function Header() {
 
       {/* Floating Contact Button - Visible only on mobile */}
       <Link 
-        href="/contact"
-        className="md:hidden fixed bottom-4 right-4 bg-black text-white font-bold py-3 px-4 rounded-full shadow-lg hover:bg-gray-800 transition-colors z-50"
-      >
-        Contact us
-      </Link>
+      href="/contact"
+      className="md:hidden fixed bottom-4 right-4 bg-black text-white font-bold py-3 px-4 rounded-2xl shadow-lg hover:bg-gray-800 transition-colors z-50"
+    >
+      <FontAwesomeIcon icon={faPhone} className="mr-2" /> Contact us
+    </Link>
     </>
   );
 }
