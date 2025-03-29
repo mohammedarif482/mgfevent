@@ -4,6 +4,11 @@ const MasonryGallery = ({ items }) => {
   const scrollContainerRef = useRef(null);
   const [fullscreenMedia, setFullscreenMedia] = useState(null);
   const [isPlaying, setIsPlaying] = useState(true);
+  const animationRef = useRef(null);
+  const isDraggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const topPositionRef = useRef(0);
+  const bottomPositionRef = useRef(0);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
@@ -56,30 +61,150 @@ const MasonryGallery = ({ items }) => {
     container.appendChild(topRow);
     container.appendChild(bottomRow);
 
-    // Animation for continuous horizontal scrolling
-    let topPosition = 0;
-    let bottomPosition = 0;
-    
-    const animate = () => {
-      topPosition -= 1.5; // Top row scroll speed
-      bottomPosition -= 1; // Bottom row scroll speed (slightly different for parallax effect)
-
-      topRow.style.transform = `translateX(${topPosition}px)`;
-      bottomRow.style.transform = `translateX(${bottomPosition}px)`;
-
-      // Reset positions when fully scrolled
-      const containerWidth = topRow.scrollWidth / 2;
-      if (Math.abs(topPosition) >= containerWidth) {
-        topPosition = 0;
+    // Setup manual scrolling event listeners
+    const handleMouseDown = (e) => {
+      isDraggingRef.current = true;
+      startXRef.current = e.clientX;
+      // Pause auto-scrolling while dragging
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
       }
-      if (Math.abs(bottomPosition) >= containerWidth) {
-        bottomPosition = 0;
-      }
-
-      requestAnimationFrame(animate);
+      container.style.cursor = 'grabbing';
     };
 
-    animate();
+    const handleMouseMove = (e) => {
+      if (!isDraggingRef.current) return;
+      
+      const dx = e.clientX - startXRef.current;
+      startXRef.current = e.clientX;
+      
+      // Update positions
+      topPositionRef.current += dx;
+      bottomPositionRef.current += dx;
+      
+      // Apply transforms
+      topRow.style.transform = `translateX(${topPositionRef.current}px)`;
+      bottomRow.style.transform = `translateX(${bottomPositionRef.current}px)`;
+      
+      // Handle wrapping for infinite scroll effect
+      const containerWidth = topRow.scrollWidth / 2;
+      if (Math.abs(topPositionRef.current) >= containerWidth) {
+        topPositionRef.current = topPositionRef.current % containerWidth;
+      }
+      if (Math.abs(bottomPositionRef.current) >= containerWidth) {
+        bottomPositionRef.current = bottomPositionRef.current % containerWidth;
+      }
+    };
+
+    const handleMouseUp = () => {
+      isDraggingRef.current = false;
+      container.style.cursor = 'grab';
+      // Resume auto-scrolling
+      startAutoScroll(topRow, bottomRow);
+    };
+
+    const handleMouseLeave = () => {
+      if (isDraggingRef.current) {
+        isDraggingRef.current = false;
+        container.style.cursor = 'grab';
+        // Resume auto-scrolling
+        startAutoScroll(topRow, bottomRow);
+      }
+    };
+
+    // Add touch support
+    const handleTouchStart = (e) => {
+      isDraggingRef.current = true;
+      startXRef.current = e.touches[0].clientX;
+      // Pause auto-scrolling while dragging
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+
+    const handleTouchMove = (e) => {
+      if (!isDraggingRef.current) return;
+      
+      const dx = e.touches[0].clientX - startXRef.current;
+      startXRef.current = e.touches[0].clientX;
+      
+      // Update positions
+      topPositionRef.current += dx;
+      bottomPositionRef.current += dx;
+      
+      // Apply transforms
+      topRow.style.transform = `translateX(${topPositionRef.current}px)`;
+      bottomRow.style.transform = `translateX(${bottomPositionRef.current}px)`;
+      
+      // Handle wrapping for infinite scroll effect
+      const containerWidth = topRow.scrollWidth / 2;
+      if (Math.abs(topPositionRef.current) >= containerWidth) {
+        topPositionRef.current = topPositionRef.current % containerWidth;
+      }
+      if (Math.abs(bottomPositionRef.current) >= containerWidth) {
+        bottomPositionRef.current = bottomPositionRef.current % containerWidth;
+      }
+    };
+
+    const handleTouchEnd = () => {
+      isDraggingRef.current = false;
+      // Resume auto-scrolling
+      startAutoScroll(topRow, bottomRow);
+    };
+
+    container.addEventListener('mousedown', handleMouseDown);
+    container.addEventListener('mousemove', handleMouseMove);
+    container.addEventListener('mouseup', handleMouseUp);
+    container.addEventListener('mouseleave', handleMouseLeave);
+    container.addEventListener('touchstart', handleTouchStart);
+    container.addEventListener('touchmove', handleTouchMove);
+    container.addEventListener('touchend', handleTouchEnd);
+
+    // Set initial cursor style
+    container.style.cursor = 'grab';
+
+    // Function to start auto-scrolling
+    const startAutoScroll = (topRow, bottomRow) => {
+      const animate = () => {
+        if (!isDraggingRef.current) {
+          topPositionRef.current -= 1.5; // Top row scroll speed
+          bottomPositionRef.current -= 1; // Bottom row scroll speed
+
+          topRow.style.transform = `translateX(${topPositionRef.current}px)`;
+          bottomRow.style.transform = `translateX(${bottomPositionRef.current}px)`;
+
+          // Reset positions when fully scrolled
+          const containerWidth = topRow.scrollWidth / 2;
+          if (Math.abs(topPositionRef.current) >= containerWidth) {
+            topPositionRef.current = 0;
+          }
+          if (Math.abs(bottomPositionRef.current) >= containerWidth) {
+            bottomPositionRef.current = 0;
+          }
+
+          animationRef.current = requestAnimationFrame(animate);
+        }
+      };
+
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    // Start auto-scrolling initially
+    startAutoScroll(topRow, bottomRow);
+
+    // Cleanup
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+      container.removeEventListener('mousedown', handleMouseDown);
+      container.removeEventListener('mousemove', handleMouseMove);
+      container.removeEventListener('mouseup', handleMouseUp);
+      container.removeEventListener('mouseleave', handleMouseLeave);
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
+    };
   }, [items]);
 
   const FullscreenModal = () => {
@@ -157,25 +282,28 @@ const MasonryGallery = ({ items }) => {
   };
 
   return (
-  <div className="bg-white py-16">
-    <p className="text-center text-gray-600 mb-1 text-lg">
-    Our journey ever since we started,</p>
-        {/* Section Title */}
-        <h2 className="text-center text-4xl md:text-5xl font-medium text-gray-900 mb-16">Our journey </h2>
-    {/* Tagline */}
-    <p className="text-center text-gray-600 mb-5 text-lg px-4 sm:px-6 lg:px-8">Our journey began with a simple belief that every event deserves to be extraordinary. We understood that behind every celebration, there's a unique story waiting to be told. And we dedicated ourselves to becoming the masters of those narratives. (photos of past events, showcasing diversity of events hosted in the past) Over the years, we've had the privilege of transforming countless visions into breathtaking realities. From intimate gatherings to grand-scale productions, our portfolio reflects our unwavering commitment to excellence. We've managed events that have broken attendance records, launched groundbreaking products.</p>
-    
-    <div className="w-full overflow-hidden relative">
+    <div className="bg-white py-16">
+      <p className="text-center text-gray-600 mb-1 text-lg">
+        Our journey ever since we started,
+      </p>
+      {/* Section Title */}
+      <h2 className="text-center text-4xl md:text-5xl font-medium text-gray-900 mb-16">Our journey</h2>
+      {/* Tagline */}
+      <p className="text-center text-gray-600 mb-16 text-lg px-4 sm:px-6 lg:px-8">
+        Our journey began with a simple belief that every event deserves to be extraordinary. We understood that behind every celebration, there's a unique story waiting to be told. And we dedicated ourselves to becoming the masters of those narratives. (photos of past events, showcasing diversity of events hosted in the past) Over the years, we've had the privilege of transforming countless visions into breathtaking realities. From intimate gatherings to grand-scale productions, our portfolio reflects our unwavering commitment to excellence. We've managed events that have broken attendance records, launched groundbreaking products.
+      </p>
+      
+      <div className="w-full overflow-hidden relative">
         <div 
-            ref={scrollContainerRef}
-            className="flex flex-col space-y-4"
+          ref={scrollContainerRef}
+          className="flex flex-col space-y-4"
         >
-            {/* Content dynamically added via JavaScript */}
+          {/* Content dynamically added via JavaScript */}
         </div>
-    </div>
+      </div>
 
-    <FullscreenModal />
-</div>
+      <FullscreenModal />
+    </div>
   );
 };
 
@@ -183,7 +311,6 @@ const MasonryGallery = ({ items }) => {
 const App = () => {
   const galleryItems = [
     { type: 'image', src: '/img1.jpg' },
- 
     { type: 'image', src: '/img2.jpg' },
     { type: 'video', src: '/vid2.mp4' },
     { type: 'video', src: '/vid1.mp4' },
