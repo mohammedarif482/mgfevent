@@ -1,22 +1,47 @@
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Marriage from "../../public/bg.jpeg";
+import Marriage2 from "../../public/bg2.jpeg";
+import Marriage3 from "../../public/bg3.jpeg";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInstagram, faYoutube, faFacebookF,faXTwitter } from '@fortawesome/free-brands-svg-icons';
+import { faInstagram, faYoutube, faFacebookF, faXTwitter } from '@fortawesome/free-brands-svg-icons';
 
 export default function WeddingHero() {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const images = [Marriage, Marriage2, Marriage3];
+  
+  const nextImage = useCallback(() => {
+    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+  }, [images.length]);
+  
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      nextImage();
+    }, 5000); // Change slide every 5 seconds
+    
+    return () => clearInterval(intervalId);
+  }, [nextImage]);
+
   return (
     <section className="relative w-full" style={{ height: "calc(100vh - 72px)" }}>
-      {/* Background Image */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src={Marriage}
-          alt="Wedding Venue"
-          fill
-          className="object-cover"
-          priority
-        />
-        <div className="absolute inset-0 bg-black/30" /> {/* Overlay */}
-      </div>
+      {/* Background Image Carousel */}
+      {images.map((image, index) => (
+        <div 
+          key={index}
+          className={`absolute inset-0 z-0 transition-opacity duration-1000 ease-in-out ${
+            index === currentImageIndex ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <Image
+            src={image}
+            alt={`Wedding Venue ${index + 1}`}
+            fill
+            className="object-cover"
+            priority={index === 0}
+          />
+          <div className="absolute inset-0 bg-black/30" /> {/* Overlay */}
+        </div>
+      ))}
 
       {/* Content Container */}
       <div className="absolute inset-0 flex items-center justify-center">
@@ -57,6 +82,20 @@ export default function WeddingHero() {
         </div>
       </div>
 
+      {/* Carousel Indicators */}
+      <div className="absolute bottom-24 left-1/2 transform -translate-x-1/2 z-10 flex space-x-2">
+        {images.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentImageIndex(index)}
+            className={`w-3 h-3 rounded-full transition-all ${
+              index === currentImageIndex ? "bg-white scale-110" : "bg-white/50"
+            }`}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
+
       {/* Social Media Container */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10">
         <div className="bg-black/50 rounded-2xl px-6 py-3 flex items-center space-x-4">
@@ -75,7 +114,7 @@ export default function WeddingHero() {
             <FontAwesomeIcon icon={faFacebookF} className="w-6 h-6" />
           </a>
           <a href="#" className="text-white hover:text-gray-300 jump-animation">
-       <FontAwesomeIcon icon={faXTwitter} className="w-6 h-6" />
+            <FontAwesomeIcon icon={faXTwitter} className="w-6 h-6" />
           </a>
         </div>
       </div>
