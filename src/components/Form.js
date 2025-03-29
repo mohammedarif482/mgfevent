@@ -193,7 +193,7 @@ const EnquiryForm = () => {
               
               <button
                 type="submit"
-                className="w-full bg-[#e35c26] text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline transition duration-150"
+                className="w-full bg-[#e35c26] text-white font-bold py-3 px-4 rounded-2xl focus:outline-none focus:shadow-outline transition duration-150"
               >
                 Submit Enquiry
               </button>

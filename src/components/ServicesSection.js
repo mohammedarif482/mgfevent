@@ -95,7 +95,7 @@ export default function ServicesSection() {
         <div className="mt-16 text-center">
           <Link 
             href="/contact" 
-            className="inline-block py-3 px-8 bg-[#e35c26] hover:bg-[#d04a45] text-white font-medium rounded-full transition-colors duration-200"
+            className="inline-block py-3 px-8 bg-[#e35c26] hover:bg-[#d04a45] text-white font-medium rounded-2xl transition-colors duration-200"
           >
             Get free quote
           </Link>

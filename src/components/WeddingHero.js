@@ -33,19 +33,19 @@ export default function WeddingHero() {
             {/* Right Column - CTA Buttons */}
             <div className="md:w-1/2 flex justify-center md:justify-end">
               <div className="flex flex-col space-y-4 max-w-md">
-              <button className="bg-[#e35c26]/30 text-white backdrop-blur-sm px-6 py-3 rounded-full font-medium hover:bg-[#e35c26]/50 hover:backdrop-blur-md transition-all jump-button">
+              <button className="bg-[#e35c26]/30 text-white backdrop-blur-sm px-6 py-3 rounded-2xl font-medium hover:bg-[#e35c26]/50 hover:backdrop-blur-md transition-all jump-button">
                   Have a limited budget?<br/> Connect with us today
                 </button>
-                <button className="bg-[#e35c26]/30 text-white backdrop-blur-sm px-6 py-3 rounded-full font-medium hover:bg-[#e35c26]/50 hover:backdrop-blur-md transition-all jump-button">
+                <button className="bg-[#e35c26]/30 text-white backdrop-blur-sm px-6 py-3 rounded-2xl font-medium hover:bg-[#e35c26]/50 hover:backdrop-blur-md transition-all jump-button">
                   View Our Portfolio
                 </button>
-                <button className="bg-[#e35c26]/30 text-white backdrop-blur-sm px-6 py-3 rounded-full font-medium hover:bg-[#e35c26]/50 hover:backdrop-blur-md transition-all jump-button">
+                <button className="bg-[#e35c26]/30 text-white backdrop-blur-sm px-6 py-3 rounded-2xl font-medium hover:bg-[#e35c26]/50 hover:backdrop-blur-md transition-all jump-button">
                   Download Our Event Planning Checklist
                 </button>
-                <button className="bg-[#e35c26]/30 text-white backdrop-blur-sm px-6 py-3 rounded-full font-medium hover:bg-[#e35c26]/50 hover:backdrop-blur-md transition-all jump-button">
+                <button className="bg-[#e35c26]/30 text-white backdrop-blur-sm px-6 py-3 rounded-2xl font-medium hover:bg-[#e35c26]/50 hover:backdrop-blur-md transition-all jump-button">
                   Get Your Free Event Budget Template
                 </button>
-                <button className="bg-[#e35c26]/30 text-white backdrop-blur-sm px-6 py-3 rounded-full font-medium hover:bg-[#e35c26]/50 hover:backdrop-blur-md transition-all jump-button">
+                <button className="bg-[#e35c26]/30 text-white backdrop-blur-sm px-6 py-3 rounded-2xl font-medium hover:bg-[#e35c26]/50 hover:backdrop-blur-md transition-all jump-button">
                   Reserve Your Date
                 </button>
               </div>
@@ -56,7 +56,7 @@ export default function WeddingHero() {
 
       {/* Social Media Container */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10">
-        <div className="bg-black/50 rounded-full px-6 py-3 flex items-center space-x-4">
+        <div className="bg-black/50 rounded-2xl px-6 py-3 flex items-center space-x-4">
           {/* Instagram Icon */}
           <a href="#" className="text-white hover:text-gray-300 jump-animation">
             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
