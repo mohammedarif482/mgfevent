@@ -12,9 +12,12 @@ const EnquiryForm = () => {
   });
   
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState('');
+  const [submitMessage, setSubmitMessage] = useState('');
+  
   const slides = [
     { id: 0, background: "#1dace4" },
-
     { id: 1, background: "#e65e28" },
     { id: 2, background: "#5aae97" },
   ];
@@ -27,10 +30,57 @@ const EnquiryForm = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Handle form submission logic here
+    setIsSubmitting(true);
+    setSubmitStatus('');
+    setSubmitMessage('');
+    
+    try {
+      // Replace this URL with your actual deployed Google Apps Script Web App URL
+      const scriptURL = 'https://script.google.com/macros/s/AKfycby9PUVwczZpxGvgpeQWIQDjwqGlQ1oVmt88DMuggh7lrNaB61JHFAoxhhJI_6tkOiEoNQ/exec';
+      
+      console.log("Submitting form data:", formData);
+      
+      const response = await fetch(scriptURL, {
+        method: 'POST',
+        body: JSON.stringify(formData),
+        headers: {
+          'Content-Type': 'text/plain'  // Use text/plain to avoid preflight CORS issues
+        },
+        mode: 'cors',  // Explicitly set CORS mode
+        redirect: 'follow'
+      });
+      
+      const result = await response.json();
+      console.log("Server response:", result);
+      
+      if (result.result === 'success') {
+        setSubmitStatus('success');
+        setSubmitMessage('Thank you for your enquiry! We will get back to you soon.');
+        
+        // Reset form
+        setState({
+          name: '',
+          contact: '',
+          location: '',
+          event: '',
+          eventDate: '',
+          budget: '',
+          connectOnWhatsapp: false
+        });
+      } else {
+        setSubmitStatus('error');
+        setSubmitMessage('There was an error submitting your form. Please try again later.');
+        console.error('Form submission error:', result.message);
+      }
+    } catch (error) {
+      setSubmitStatus('error');
+      setSubmitMessage('Connection error. Please check your internet connection and try again.');
+      console.error('Error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   // Auto-advance slides every 5 seconds
@@ -40,13 +90,11 @@ const EnquiryForm = () => {
     }, 5000);
     
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
 
   return (
     <div className="flex min-h-screen bg-white">
       <div className="m-auto w-full max-w-6xl">
-       
-        
         <div className="flex flex-col md:flex-row rounded-3xl overflow-hidden">
           {/* Left side with image */}
           <div className="w-full md:w-2/5 relative overflow-hidden" style={{minHeight: "350px"}}>
@@ -104,8 +152,20 @@ const EnquiryForm = () => {
           
           {/* Right side with form */}
           <div className="w-full md:w-3/5 bg-gray-100 p-8">
-            <h1 className="text-black text-3xl font-bold mb-2">Enquire No</h1>
+            <h1 className="text-black text-3xl font-bold mb-2">Enquire Now</h1>
             <p className="text-gray-400 mb-6">Tell us about your event and we'll get back to you</p>
+            
+            {submitStatus === 'success' && (
+              <div className="mb-4 p-3 bg-green-100 text-green-700 rounded">
+                {submitMessage}
+              </div>
+            )}
+            
+            {submitStatus === 'error' && (
+              <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+                {submitMessage}
+              </div>
+            )}
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -125,7 +185,7 @@ const EnquiryForm = () => {
                   type="tel"
                   name="contact"
                   placeholder="Contact"
-                  className="w-full p-3 rounded  bg-white text-gray-700 border border-gray-300 focus:outline-none focus:border-[#e35c26]"
+                  className="w-full p-3 rounded bg-white text-gray-700 border border-gray-300 focus:outline-none focus:border-[#e35c26]"
                   value={formData.contact}
                   onChange={handleChange}
                 />
@@ -136,7 +196,7 @@ const EnquiryForm = () => {
                   type="text"
                   name="location"
                   placeholder="Location"
-                  className="w-full p-3 rounded  bg-white text-gray-700 border border-gray-300 focus:outline-none focus:border-[#e35c26]"
+                  className="w-full p-3 rounded bg-white text-gray-700 border border-gray-300 focus:outline-none focus:border-[#e35c26]"
                   value={formData.location}
                   onChange={handleChange}
                 />
@@ -145,11 +205,11 @@ const EnquiryForm = () => {
               <div>
                 <select
                   name="event"
-                  className="w-full p-3 rounded  bg-white text-gray-700 border border-gray-300 focus:outline-none focus:border-[#e35c26] appearance-none"
+                  className="w-full p-3 rounded bg-white text-gray-700 border border-gray-300 focus:outline-none focus:border-[#e35c26] appearance-none"
                   value={formData.event}
                   onChange={handleChange}
                 >
-                  <option value="" disabled selected>Event</option>
+                  <option value="" disabled>Event</option>
                   <option value="wedding">Wedding</option>
                   <option value="birthday">Birthday</option>
                   <option value="corporate">Corporate</option>
@@ -162,7 +222,7 @@ const EnquiryForm = () => {
                   type="date"
                   name="eventDate"
                   placeholder="Event date"
-                  className="w-full p-3 rounded  bg-white text-gray-700 border border-gray-300 focus:outline-none focus:border-[#e35c26]"
+                  className="w-full p-3 rounded bg-white text-gray-700 border border-gray-300 focus:outline-none focus:border-[#e35c26]"
                   value={formData.eventDate}
                   onChange={handleChange}
                 />
@@ -173,7 +233,7 @@ const EnquiryForm = () => {
                   type="text"
                   name="budget"
                   placeholder="Budget"
-                  className="w-full p-3 rounded  bg-white text-gray-700 border border-gray-300 focus:outline-none focus:border-[#e35c26]"
+                  className="w-full p-3 rounded bg-white text-gray-700 border border-gray-300 focus:outline-none focus:border-[#e35c26]"
                   value={formData.budget}
                   onChange={handleChange}
                 />
@@ -194,11 +254,10 @@ const EnquiryForm = () => {
               <button
                 type="submit"
                 className="w-full bg-[#e35c26] text-white font-bold py-3 px-4 rounded-2xl focus:outline-none focus:shadow-outline transition duration-150"
+                disabled={isSubmitting}
               >
-                Submit Enquiry
+                {isSubmitting ? 'Submitting...' : 'Submit Enquiry'}
               </button>
-              
-             
             </form>
           </div>
         </div>
